@@ -6,11 +6,10 @@ import ReactCodeInput from 'react-code-input';
 interface AdminPageProps {
   adminAuth: boolean;
   handleAdminAuth: (pincode: any) => boolean;
+  pincodeLength: number;
 }
 
 const Alert = (props: AlertProps) => <MuiAlert elevation={6} variant="filled" {...props} />;
-
-const pincodeLength = 6;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth }) => {
+const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pincodeLength }) => {
   const classes = useStyles();
 
   const [pincode, setPincode] = useState('');
