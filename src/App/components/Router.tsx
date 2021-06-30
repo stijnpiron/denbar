@@ -10,15 +10,23 @@ interface RouterProps {
   tablePageProps: { selectedTable: string };
   scanPageProps: { scanTable: (data: string) => void };
   adminPageProps: { adminAuth: boolean; handleAdminAuth: (pincode: any) => boolean; pincodeLength: number };
+  ordersPageProps: { adminAuth: boolean };
+  checkoutPageProps: { adminAuth: boolean };
 }
 
-const Router: React.FC<RouterProps> = ({ tablePageProps, scanPageProps, adminPageProps }) => (
+const Router: React.FC<RouterProps> = ({
+  adminPageProps,
+  checkoutPageProps,
+  ordersPageProps,
+  scanPageProps,
+  tablePageProps,
+}) => (
   <Switch>
     <Route exact path={['/', '/scan']} render={(): React.ReactElement => <ScanPage {...scanPageProps} />} />
     <Route exact path={'/table'} render={(): React.ReactElement => <TablePage {...tablePageProps} />} />
     <Route exact path="/admin" render={(): React.ReactElement => <AdminPage {...adminPageProps} />} />
-    <Route exact path="/orders" render={(): React.ReactElement => <OrdersPage />} />
-    <Route exact path="/checkout" render={(): React.ReactElement => <CheckoutPage />} />
+    <Route exact path="/orders" render={(): React.ReactElement => <OrdersPage {...ordersPageProps} />} />
+    <Route exact path="/checkout" render={(): React.ReactElement => <CheckoutPage {...checkoutPageProps} />} />
   </Switch>
 );
 

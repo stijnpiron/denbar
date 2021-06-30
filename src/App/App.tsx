@@ -145,6 +145,8 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
     tablePageProps: { selectedTable },
     scanPageProps: { scanTable: handleScanTable },
     adminPageProps: { adminAuth, handleAdminAuth, pincodeLength: adminPincode.length },
+    ordersPageProps: { adminAuth },
+    checkoutPageProps: { adminAuth },
   };
 
   return (
