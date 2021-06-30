@@ -144,7 +144,7 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
   const routerProps = {
     tablePageProps: { selectedTable },
     scanPageProps: { scanTable: handleScanTable },
-    adminPageProps: { adminAuth, handleAdminAuth },
+    adminPageProps: { adminAuth, handleAdminAuth, pincodeLength: adminPincode.length },
   };
 
   return (
