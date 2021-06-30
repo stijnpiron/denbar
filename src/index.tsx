@@ -6,7 +6,7 @@ import App from './App/App';
 import './index.css';
 
 const title = 'Kazou - Massembre bar';
-const adminPincode = '123456';
+const adminPincode = process.env.REACT_APP_ADMIN_PIN || '';
 const { version } = pjson;
 
 const appProps = {

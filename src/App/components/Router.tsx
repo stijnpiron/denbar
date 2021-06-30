@@ -9,7 +9,7 @@ import TablePage from '../../pages/table/TablePage';
 interface RouterProps {
   tablePageProps: { selectedTable: string };
   scanPageProps: { scanTable: (data: string) => void };
-  adminPageProps: { adminAuth: boolean; handleAdminAuth: (pincode: any) => boolean };
+  adminPageProps: { adminAuth: boolean; handleAdminAuth: (pincode: any) => boolean; pincodeLength: number };
 }
 
 const Router: React.FC<RouterProps> = ({ tablePageProps, scanPageProps, adminPageProps }) => (
