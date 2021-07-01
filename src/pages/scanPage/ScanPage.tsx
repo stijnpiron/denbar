@@ -14,6 +14,8 @@ const ScanPage: React.FC<ScanPageProps> = ({ scanTable }) => {
 
   const previewStyle = {
     margin: 'auto',
+    maxWidth: '400px',
+    maxHeight: '320px',
   };
 
   return <QrReader delay={100} resolution={1000} style={previewStyle} onError={handleError} onScan={handleScan} />;
