@@ -147,6 +147,7 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
     adminPageProps: { adminAuth, handleAdminAuth, pincodeLength: adminPincode.length },
     ordersPageProps: { adminAuth },
     checkoutPageProps: { adminAuth },
+    qrCodesPageProps: { adminAuth },
   };
 
   return (

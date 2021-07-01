@@ -22,7 +22,6 @@ import {
 import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
 import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
 import AddRoundedIcon from '@material-ui/icons/AddRounded';
-import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -33,6 +32,7 @@ import { FirestoreProduct, Product } from 'interfaces/product';
 import { Table, TableStatus } from 'interfaces/table';
 import { useEffect, useRef, useState } from 'react';
 import ReactCodeInput from 'react-code-input';
+import { useHistory } from 'react-router-dom';
 
 interface AdminPageProps {
   adminAuth: boolean;
@@ -109,6 +109,7 @@ const newTableTemplate: Table = { name: '', amount: 0.0, status: TableStatus.OPE
 const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pincodeLength }) => {
   const classes = useStyles();
   const db = firebase.firestore();
+  let history = useHistory();
 
   const [pincode, setPincode] = useState('');
   const [authSuccess, setAuthSuccess] = useState(false);
@@ -323,6 +324,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                   >
                     <AddRoundedIcon />
                   </IconButton>
+                  <IconButton
+                    color="primary"
+                    aria-label="get qr cdes"
+                    component="span"
+                    onClick={() => history.push('/qr-codes')}
+                  >
+                    <Icon>qr_code</Icon>
+                  </IconButton>
                 </div>
                 {tables
                   .sort((a, b) => (a.value.name > b.value.name ? 1 : -1))
@@ -336,7 +345,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                           € {t.value.amount}
                         </Typography>
                       </CardContent>
-                      <CardActions>
+                      {/* <CardActions>
                         <IconButton aria-label="edit table" color="primary" component="span">
                           <EditIcon />
                         </IconButton>
@@ -349,7 +358,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                         <IconButton aria-label="close table" color="secondary" component="span">
                           <Icon>qr_code</Icon>
                         </IconButton>
-                      </CardActions>
+                      </CardActions> */}
                     </Card>
                   ))}
               </AccordionDetails>

@@ -1,7 +1,7 @@
 import { Redirect } from 'react-router-dom';
 
 interface CheckoutPageProps {
-  [key: string]: any;
+  adminAuth: boolean;
 }
 
 const CheckoutPage: React.FC<CheckoutPageProps> = ({ adminAuth }) => (
