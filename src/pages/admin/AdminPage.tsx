@@ -30,6 +30,7 @@ import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import firebase from 'firebase';
 import { useGetData } from 'hooks/useGetData';
 import { FirestoreProduct, Product } from 'interfaces/product';
+import { Table, TableStatus } from 'interfaces/table';
 import { useEffect, useRef, useState } from 'react';
 import ReactCodeInput from 'react-code-input';
 
@@ -61,6 +62,12 @@ const AccordionDetails = withStyles((theme) => ({
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    addButtonContainer: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
+    },
     container: {
       alignItems: 'stretch',
       display: 'flex',
@@ -95,8 +102,9 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const newProductTemplate = { name: '', price: 0.0 };
-const editProductTemplate = { id: '', value: { name: '', price: 0.0 } };
+const newProductTemplate: Product = { name: '', price: 0.0 };
+const editProductTemplate: FirestoreProduct = { id: '', value: { name: '', price: 0.0 } };
+const newTableTemplate: Table = { name: '', amount: 0.0, status: TableStatus.OPEN };
 
 const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pincodeLength }) => {
   const classes = useStyles();
@@ -107,30 +115,52 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [addProductDialog, setAddProductDialog] = useState(false);
   const [editProductDialog, setEditProductDialog] = useState(false);
+  const [addTableDialog, setAddTableDialog] = useState(false);
   const [newProduct, setNewProduct] = useState<Product>(newProductTemplate);
   const [editProduct, setEditProduct] = useState<FirestoreProduct>(editProductTemplate);
+  const [newTable, setNewTable] = useState<Table>(newTableTemplate);
   const [validNewProduct, setValidNewProduct] = useState(false);
   const [validEditProduct, setValidEditProduct] = useState(false);
+  const [validNewTable, setValidNewTable] = useState(false);
 
   const [products] = useGetData('Products');
+  const [tables] = useGetData('Tables');
 
   const handlePinCodeChange = (data: any) => setPincode(data);
   const handleAddProductDialogOpen = () => setAddProductDialog(true);
-  const handleAddProductDialogClose = () => setAddProductDialog(false);
+  const handleAddProductDialogClose = () => {
+    setNewProduct(newProductTemplate);
+    setAddProductDialog(false);
+  };
   const handleEditProductDialogOpen = () => setEditProductDialog(true);
-  const handleEditProductDialogClose = () => setEditProductDialog(false);
+  const handleEditProductDialogClose = () => {
+    setEditProduct(editProductTemplate);
+    setEditProductDialog(false);
+  };
+  const handleAddTableDialogOpen = () => setAddTableDialog(true);
+  const handleAddTableDialogClose = () => {
+    setNewTable(newTableTemplate);
+    setAddTableDialog(false);
+  };
   const handleNewProductPropertyChanged = (key: string, e: React.ChangeEvent<any>): void =>
     setNewProduct({ ...newProduct, [key]: e.target.value });
   const handleEditProductPropertyChanged = (key: string, e: React.ChangeEvent<any>): void =>
     setEditProduct({ ...editProduct, value: { ...editProduct.value, [key]: e.target.value } });
+  const handleNewTablePropertyChanged = (key: string, e: React.ChangeEvent<any>): void =>
+    setNewTable({ ...newTable, [key]: e.target.value });
 
   const handleAddProduct = () => {
     db.collection('Products')
       .add({ ...newProduct })
       .catch((error: any) => console.error('Error writing adding new product: ', error));
-
-    setNewProduct(newProductTemplate);
     handleAddProductDialogClose();
+  };
+
+  const handleAddTable = () => {
+    db.collection('Tables')
+      .add({ ...newTable })
+      .catch((error: any) => console.error('Error writing adding new table: ', error));
+    handleAddTableDialogClose();
   };
 
   const handleStartEditProduct = (product: FirestoreProduct) => {
@@ -185,6 +215,10 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
     setValidEditProduct(!!editProduct.value.name && !!editProduct.value.price);
   }, [editProduct]);
 
+  useEffect(() => {
+    setValidNewTable(!!newTable.name);
+  }, [newTable]);
+
   return (
     <>
       <Snackbar
@@ -227,14 +261,16 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                 <Typography>Producten</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <IconButton
-                  color="primary"
-                  aria-label="add product"
-                  component="span"
-                  onClick={handleAddProductDialogOpen}
-                >
-                  <AddRoundedIcon />
-                </IconButton>
+                <div className={classes.addButtonContainer}>
+                  <IconButton
+                    color="primary"
+                    aria-label="add product"
+                    component="span"
+                    onClick={handleAddProductDialogOpen}
+                  >
+                    <AddRoundedIcon />
+                  </IconButton>
+                </div>
                 {products
                   .sort((a, b) => (a.value.name > b.value.name ? 1 : -1))
                   .map((p) => (
@@ -278,33 +314,44 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                 <Typography>Tafels</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <IconButton color="primary" aria-label="add table" component="span">
-                  <AddRoundedIcon />
-                </IconButton>
-                <Card className={classes.card}>
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      Tafel 1
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary" component="p">
-                      € 23,6
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <IconButton aria-label="edit table" color="primary" component="span">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton aria-label="remove table" color="secondary" component="span">
-                      <DeleteIcon />
-                    </IconButton>
-                    <IconButton aria-label="close table" color="secondary" component="span">
-                      <CloseIcon />
-                    </IconButton>
-                    <IconButton aria-label="close table" color="secondary" component="span">
-                      <Icon>qr_code</Icon>
-                    </IconButton>
-                  </CardActions>
-                </Card>
+                <div className={classes.addButtonContainer}>
+                  <IconButton
+                    color="primary"
+                    aria-label="add table"
+                    component="span"
+                    onClick={handleAddTableDialogOpen}
+                  >
+                    <AddRoundedIcon />
+                  </IconButton>
+                </div>
+                {tables
+                  .sort((a, b) => (a.value.name > b.value.name ? 1 : -1))
+                  .map((t) => (
+                    <Card className={classes.card}>
+                      <CardContent>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {t.value.name}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary" component="p">
+                          € {t.value.amount}
+                        </Typography>
+                      </CardContent>
+                      <CardActions>
+                        <IconButton aria-label="edit table" color="primary" component="span">
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton aria-label="remove table" color="secondary" component="span">
+                          <DeleteIcon />
+                        </IconButton>
+                        <IconButton aria-label="close table" color="secondary" component="span">
+                          <CloseIcon />
+                        </IconButton>
+                        <IconButton aria-label="close table" color="secondary" component="span">
+                          <Icon>qr_code</Icon>
+                        </IconButton>
+                      </CardActions>
+                    </Card>
+                  ))}
               </AccordionDetails>
             </Accordion>
           </div>
@@ -392,6 +439,30 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                 Cancel
               </Button>
               <Button onClick={handleEditProduct} disabled={!validEditProduct} color="primary">
+                Ok
+              </Button>
+            </DialogActions>
+          </Dialog>
+          <Dialog disableBackdropClick disableEscapeKeyDown open={addTableDialog} onClose={handleAddTableDialogClose}>
+            <DialogTitle>Nieuwe tafel</DialogTitle>
+            <DialogContent>
+              <form className={classes.container}>
+                <FormControl className={classes.formControl}>
+                  <TextField
+                    variant="outlined"
+                    type="text"
+                    label="TableName"
+                    onChange={(e: React.ChangeEvent<any>): void => handleNewTablePropertyChanged('name', e)}
+                    value={newTable?.name}
+                  ></TextField>
+                </FormControl>
+              </form>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleAddTableDialogClose} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleAddTable} disabled={!validNewTable} color="primary">
                 Ok
               </Button>
             </DialogActions>
