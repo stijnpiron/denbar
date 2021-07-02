@@ -142,11 +142,12 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
 
   const menuProps = { parts, selectedTable: !!selectedTable, handleDrawerClose, menuOpen };
   const routerProps = {
-    tablePageProps: { selectedTable },
+    tablePageProps: { scanTable: handleScanTable, selectedTable },
     scanPageProps: { scanTable: handleScanTable },
     adminPageProps: { adminAuth, handleAdminAuth, pincodeLength: adminPincode.length },
     ordersPageProps: { adminAuth },
     checkoutPageProps: { adminAuth },
+    qrCodesPageProps: { adminAuth },
   };
 
   return (

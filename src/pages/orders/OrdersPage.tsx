@@ -1,7 +1,7 @@
 import { Redirect } from 'react-router-dom';
 
 interface OrdersPageProps {
-  [key: string]: any;
+  adminAuth: boolean;
 }
 
 const OrdersPage: React.FC<OrdersPageProps> = ({ adminAuth }) => {
