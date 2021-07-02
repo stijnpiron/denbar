@@ -7,7 +7,7 @@ interface ScanPageProps {
 const ScanPage: React.FC<ScanPageProps> = ({ scanTable }) => {
   const handleScan = (data: string | null) => {
     if (data) {
-      scanTable(data);
+      scanTable(data.replace(`${window.location.origin}/#/table/`, ''));
     }
   };
   const handleError = (err: any) => console.error(err);

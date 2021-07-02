@@ -26,6 +26,22 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: 360,
       backgroundColor: theme.palette.background.paper,
     },
+    qrCode: {
+      display: 'flex',
+      flexFlow: 'column nowrap',
+      justifyContent: 'center',
+      alignItems: 'center',
+      margin: 30,
+    },
+    qrCodes: {
+      display: 'flex',
+      flexFlow: 'row wrap',
+    },
+    qrCodeTitle: {
+      fontSize: 24,
+      fontWeight: 900,
+      marginBottom: 25,
+    },
   })
 );
 
@@ -33,17 +49,29 @@ const QrCodesPage: React.FC<QrCodesPageProps> = ({ adminAuth }) => {
   const classes = useStyles();
 
   const [tables] = useGetData('Tables');
-  const [selectedTables, setSelectedTables] = useState<string[]>([]);
-  const [showQrCodes, setQrCodes] = useState(false);
+  const [selectedTables, setSelectedTables] = useState<{ id: string; name: string }[]>([]);
+  const [showQrCodes, setShowQrCodes] = useState(false);
+
+  const toggleShowQrCodes = () => setShowQrCodes(!showQrCodes);
+
+  function findWithAttr(array: any[], attr: string, value: any): number {
+    for (var i = 0; i < array.length; i += 1) {
+      if (array[i][attr] === value) {
+        return i;
+      }
+    }
+    return -1;
+  }
 
   const handleSelectTable = (id: string) => () => {
-    const currentIndex = selectedTables.indexOf(id);
+    const currentSelectedTableItemIndex = findWithAttr(selectedTables, 'id', id);
+    const currentTableItemIndex = findWithAttr(tables, 'id', id);
     const newChecked = [...selectedTables];
 
-    if (currentIndex === -1) {
-      newChecked.push(id);
+    if (currentSelectedTableItemIndex === -1) {
+      newChecked.push({ id: tables[currentTableItemIndex].id, name: tables[currentTableItemIndex].value.name });
     } else {
-      newChecked.splice(currentIndex, 1);
+      newChecked.splice(currentSelectedTableItemIndex, 1);
     }
 
     setSelectedTables(newChecked);
@@ -62,7 +90,7 @@ const QrCodesPage: React.FC<QrCodesPageProps> = ({ adminAuth }) => {
                     <ListItemIcon>
                       <Checkbox
                         edge="start"
-                        checked={selectedTables.indexOf(t.id) !== -1}
+                        checked={findWithAttr(selectedTables, 'id', t.id) !== -1}
                         tabIndex={-1}
                         disableRipple
                         inputProps={{ 'aria-labelledby': t.id }}
@@ -72,17 +100,21 @@ const QrCodesPage: React.FC<QrCodesPageProps> = ({ adminAuth }) => {
                   </ListItem>
                 ))}
             </List>
-            <Button disabled={!!!selectedTables.length} variant="contained" color="primary">
+            <Button disabled={!!!selectedTables.length} variant="contained" color="primary" onClick={toggleShowQrCodes}>
               Toon QR Codes
             </Button>
           </>
         )) ||
           (showQrCodes && (
-            <>
-              list
-              <div>Tafel: t.value.name</div>
-              <QRCode value="t.id" />
-            </>
+            <div className={classes.qrCodes}>
+              {selectedTables.map((t) => (
+                <div className={classes.qrCode} key={t.id}>
+                  <div className={classes.qrCodeTitle}>Tafel: {t.name}</div>
+                  {/* <QRCode value={`${window.location.origin}/#/table/${t.id}`} /> */}
+                  <QRCode size={200} value={`https://localhost:3000/#/table/${t.id}`} />
+                </div>
+              ))}
+            </div>
           ))}
       </>
     )

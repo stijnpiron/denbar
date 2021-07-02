@@ -275,7 +275,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                 {products
                   .sort((a, b) => (a.value.name > b.value.name ? 1 : -1))
                   .map((p) => (
-                    <Card className={classes.card}>
+                    <Card className={classes.card} key={p.id}>
                       <CardContent>
                         <Typography gutterBottom variant="h5" component="h2">
                           {p.value.name}
@@ -336,7 +336,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                 {tables
                   .sort((a, b) => (a.value.name > b.value.name ? 1 : -1))
                   .map((t) => (
-                    <Card className={classes.card}>
+                    <Card className={classes.card} key={t.id}>
                       <CardContent>
                         <Typography gutterBottom variant="h5" component="h2">
                           {t.value.name}
@@ -452,6 +452,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
               </Button>
             </DialogActions>
           </Dialog>
+          {/* TODO: edit table dialog to add note */}
           <Dialog disableBackdropClick disableEscapeKeyDown open={addTableDialog} onClose={handleAddTableDialogClose}>
             <DialogTitle>Nieuwe tafel</DialogTitle>
             <DialogContent>
