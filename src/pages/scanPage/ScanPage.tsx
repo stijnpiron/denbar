@@ -7,13 +7,15 @@ interface ScanPageProps {
 const ScanPage: React.FC<ScanPageProps> = ({ scanTable }) => {
   const handleScan = (data: string | null) => {
     if (data) {
-      scanTable(data);
+      scanTable(data.replace(`${window.location.origin}/#/table/`, ''));
     }
   };
   const handleError = (err: any) => console.error(err);
 
   const previewStyle = {
     margin: 'auto',
+    maxWidth: '400px',
+    maxHeight: '320px',
   };
 
   return <QrReader delay={100} resolution={1000} style={previewStyle} onError={handleError} onScan={handleScan} />;
