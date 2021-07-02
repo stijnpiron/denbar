@@ -1,3 +1,4 @@
+import { Snackbar } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import IconButton from '@material-ui/core/IconButton';
@@ -5,11 +6,12 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import clsx from 'clsx';
 import { MenuItem } from 'interfaces/menu';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { getToken } from 'utils/firebase';
+import { getToken, onMessageListener } from 'utils/firebase';
 import Menu from './components/Menu';
 import Router from './components/Router';
 
@@ -63,6 +65,13 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: 'flex',
     },
+    snackbar: {
+      width: '100%',
+      marginTop: 60,
+      '& > * + *': {
+        marginTop: 75,
+      },
+    },
     title: {
       alignItems: 'baseline',
       display: 'flex',
@@ -82,8 +91,18 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
   const [selectedTable, setSelectedTable] = useState('');
   const [adminAuth, setAdminAuth] = useState(false);
 
+  const [show, setShow] = useState(false);
+  const [notification, setNotification] = useState({ title: '', body: '' });
   const [isTokenFound, setTokenFound] = useState(false);
   getToken(setTokenFound);
+
+  onMessageListener()
+    .then((payload: any) => {
+      setShow(true);
+      setNotification({ title: payload.notification.title, body: payload.notification.body });
+      console.log(payload);
+    })
+    .catch((err) => console.log('failed: ', err));
 
   const handleDrawerOpen = () => {
     setMenuOpen(true);
@@ -155,42 +174,57 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
   };
 
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <AppBar
-        position="fixed"
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: menuOpen,
-        })}
+    <>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={2500}
+        open={show}
+        onClose={() => setShow(false)}
+        key="feedback"
+        className={classes.snackbar}
       >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            className={clsx(classes.menuButton, menuOpen && classes.hide)}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap className={classes.title}>
-            <span>{title}</span>
-            {!menuOpen && <span className={classes.version}>v{version}</span>}
-            {isTokenFound && <h1> Notification permission enabled 👍🏻 </h1>}
-            {!isTokenFound && <h1> Need notification permission ❗️ </h1>}
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Menu {...menuProps} />
-      <main
-        className={clsx(classes.content, {
-          [classes.contentShift]: menuOpen,
-        })}
-      >
-        <Toolbar />
-        <Router {...routerProps} />
-      </main>
-    </div>
+        <Alert severity="info" onClose={() => setShow(false)}>
+          <AlertTitle>{notification.title}</AlertTitle>
+          {notification.body}
+        </Alert>
+      </Snackbar>
+      <div className={classes.root}>
+        <CssBaseline />
+        <AppBar
+          position="fixed"
+          className={clsx(classes.appBar, {
+            [classes.appBarShift]: menuOpen,
+          })}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              className={clsx(classes.menuButton, menuOpen && classes.hide)}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap className={classes.title}>
+              <span>{title}</span>
+              {!menuOpen && <span className={classes.version}>v{version}</span>}
+              {isTokenFound && <h1> Notification permission enabled 👍🏻 </h1>}
+              {!isTokenFound && <h1> Need notification permission ❗️ </h1>}
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Menu {...menuProps} />
+        <main
+          className={clsx(classes.content, {
+            [classes.contentShift]: menuOpen,
+          })}
+        >
+          <Toolbar />
+          <Router {...routerProps} />
+        </main>
+      </div>
+    </>
   );
 };
 
