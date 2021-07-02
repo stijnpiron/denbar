@@ -9,6 +9,7 @@ import clsx from 'clsx';
 import { MenuItem } from 'interfaces/menu';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { getToken } from 'utils/firebase';
 import Menu from './components/Menu';
 import Router from './components/Router';
 
@@ -80,6 +81,9 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedTable, setSelectedTable] = useState('');
   const [adminAuth, setAdminAuth] = useState(false);
+
+  const [isTokenFound, setTokenFound] = useState(false);
+  getToken(setTokenFound);
 
   const handleDrawerOpen = () => {
     setMenuOpen(true);
@@ -172,6 +176,8 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
           <Typography variant="h6" noWrap className={classes.title}>
             <span>{title}</span>
             {!menuOpen && <span className={classes.version}>v{version}</span>}
+            {isTokenFound && <h1> Notification permission enabled 👍🏻 </h1>}
+            {!isTokenFound && <h1> Need notification permission ❗️ </h1>}
           </Typography>
         </Toolbar>
       </AppBar>
