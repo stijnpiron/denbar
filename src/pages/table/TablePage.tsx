@@ -23,6 +23,7 @@ const TablePage: React.FC<TablePageProps> = ({ scanTable, selectedTable }) => {
   return (
     <>
       <div>Table page for: {selectedTable}</div>
+      <div>products: {JSON.stringify(products)}</div>
       <div>
         {products.map((p) => (
           <div key={p.id}>
