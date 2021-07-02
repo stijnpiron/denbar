@@ -49,3 +49,10 @@ export const getToken = (setTokenFound: Dispatch<SetStateAction<boolean>>) => {
       // catch error while creating client token
     });
 };
+
+export const onMessageListener = () =>
+  new Promise((resolve) => {
+    messaging.onMessage((payload) => {
+      resolve(payload);
+    });
+  });
