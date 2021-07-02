@@ -110,8 +110,9 @@ const QrCodesPage: React.FC<QrCodesPageProps> = ({ adminAuth }) => {
               {selectedTables.map((t) => (
                 <div className={classes.qrCode} key={t.id}>
                   <div className={classes.qrCodeTitle}>Tafel: {t.name}</div>
-                  {/* <QRCode value={`${window.location.origin}/#/table/${t.id}`} /> */}
-                  <QRCode size={200} value={`https://localhost:3000/#/table/${t.id}`} />
+                  {/* TODO: toggle next lines if not in development and for livee testing, remove second line for productino */}
+                  <QRCode value={`${window.location.origin}/#/table/${t.id}`} />
+                  {/* <QRCode size={200} value={`https://localhost:3000/#/table/${t.id}`} /> */}
                 </div>
               ))}
             </div>
