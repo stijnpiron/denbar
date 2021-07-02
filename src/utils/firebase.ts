@@ -31,7 +31,7 @@ const messaging = firebase.messaging();
 
 export const getToken = (setTokenFound: Dispatch<SetStateAction<boolean>>) => {
   return messaging
-    .getToken({ vapidKey: 'GENERATED_MESSAGING_KEY' })
+    .getToken({ vapidKey: firebaseConfig.messagingSenderId })
     .then((currentToken) => {
       if (currentToken) {
         console.log('current token for client: ', currentToken);
