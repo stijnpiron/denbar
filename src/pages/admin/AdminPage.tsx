@@ -17,7 +17,7 @@ import {
   TextField,
   Theme,
   Typography,
-  withStyles,
+  withStyles
 } from '@material-ui/core';
 import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
 import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
@@ -27,7 +27,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 import { useGetData } from 'hooks/useGetData';
 import { FirestoreProduct, Product } from 'interfaces/product';
 import { Table, TableStatus } from 'interfaces/table';

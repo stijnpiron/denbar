@@ -1,4 +1,5 @@
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 import { useEffect, useState } from 'react';
 export const useGetData = (collection: string) => {
   const [documents, setDocuments] = useState<any[]>([]);
