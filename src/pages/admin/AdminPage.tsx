@@ -17,7 +17,7 @@ import {
   TextField,
   Theme,
   Typography,
-  withStyles
+  withStyles,
 } from '@material-ui/core';
 import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
 import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
@@ -25,11 +25,13 @@ import AddRoundedIcon from '@material-ui/icons/AddRounded';
 import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import EuroIcon from '@material-ui/icons/Euro';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { useGetData } from 'hooks/useGetData';
+import { OrderStatus } from 'interfaces/order';
 import { FirestoreProduct, Product } from 'interfaces/product';
 import { Table, TableStatus } from 'interfaces/table';
 import moment from 'moment';
@@ -138,6 +140,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
 
   const [products] = useGetData('Products');
   const [tables] = useGetData('Tables');
+  const [orders] = useGetData('Orders');
 
   const handlePinCodeChange = (data: any) => setPincode(data);
   const handleAddProductDialogOpen = () => setAddProductDialog(true);
@@ -206,6 +209,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
       .collection('Products')
       .doc(productId)
       .delete()
+      .then(() => setAdminAuthAndReload())
       .catch((error: any) => {
         console.error('Error removing document: ', error);
       });
@@ -362,6 +366,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                     .map((t) => (
                       <Card className={classes.card} key={t.id}>
                         <CardContent>
+                          {t.value.status === TableStatus.PAYED && <EuroIcon />}
                           <Typography gutterBottom variant="h5" component="h2">
                             {t.value.name} - {t.value.date}
                           </Typography>
@@ -374,12 +379,29 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                           <EditIcon />
                         </IconButton> */}
                           <IconButton
+                            disabled={
+                              orders
+                                .filter((o) => o.value.tableId === t.id)
+                                .filter(
+                                  (o) => o.value.status === OrderStatus.NEW || o.value.status === OrderStatus.OPENED
+                                ).length > 0 || t.value.amount > 0
+                            }
                             aria-label="remove table"
                             color="secondary"
                             component="span"
                             onClick={() => handleCloseTable(t.id)}
                           >
-                            <CloseIcon />
+                            {orders
+                              .filter((o) => o.value.tableId === t.id)
+                              .filter(
+                                (o) => o.value.status === OrderStatus.NEW || o.value.status === OrderStatus.OPENED
+                              ).length > 0 ? (
+                              <div>Tafel afsluiten gaat niet: openstaande bestelling(en) voor deze tafel</div>
+                            ) : t.value.amount > 0 ? (
+                              <div>Tafel afsluiten gaat niet: openstaand saldo voor deze tafel</div>
+                            ) : (
+                              <CloseIcon />
+                            )}
                           </IconButton>
                           {/* <IconButton aria-label="close table" color="secondary" component="span">
                           <CloseIcon />
