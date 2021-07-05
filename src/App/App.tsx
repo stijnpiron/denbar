@@ -9,9 +9,11 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import clsx from 'clsx';
 import { MenuItem } from 'interfaces/menu';
+import { SelectedTable } from 'interfaces/table';
+import moment from 'moment';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { getToken, onMessageListener } from 'utils/firebase';
+import { onMessageListener } from 'utils/firebase';
 import Menu from './components/Menu';
 import Router from './components/Router';
 
@@ -84,22 +86,50 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+const getSelectedTableData = (): SelectedTable => {
+  const localStorageTable: SelectedTable = JSON.parse(localStorage.getItem('selectedTable') || '{}');
+  if (moment(localStorageTable.scanned) < moment().subtract(2, 'hours')) {
+    localStorage.removeItem('selectedTable');
+    return { id: '', name: '' };
+  }
+  return localStorageTable;
+};
+
 const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
   let history = useHistory();
   const classes = useStyles();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [selectedTable, setSelectedTable] = useState('');
-  const [adminAuth, setAdminAuth] = useState(false);
+  const [selectedTable, setSelectedTable] = useState<SelectedTable>(getSelectedTableData());
+  const [adminAuth, setAdminAuth] = useState(moment(localStorage.getItem('admin')) > moment().subtract(1, 'second'));
+  // const db = firebase.firestore();
+  // const [newOrders, setNewOrders] = useState<string[]>([]);
+
+  // TODO: fix new order notification
+  // if (adminAuth) {
+  // db.collection('Orders').onSnapshot((s) => {
+  //   // let arr: any[] = [];
+  //   s.docs.forEach((o) => {
+  //     if (o.data().status === 'new') {
+  //       if (!newOrders.includes(o.id)) {
+  //         setNotification({ title: 'Nieuwe bestelling', body: `Bestelling ontvangen` });
+  //         setShow(true);
+  //       }
+  //       setNewOrders([...newOrders, o.id]);
+  //     }
+  //   });
+  // const newOrders = arr.filter((o) => o.value.status === 'new').length;
+
+  // console.log(newOrders);
+  // if (orders.filter((o) => o.value.status === 'new').length) {
+  // });
+  // }
 
   const [show, setShow] = useState(false);
   const [notification, setNotification] = useState({ title: '', body: '' });
-  const [isTokenFound, setTokenFound] = useState(false);
-  getToken(setTokenFound);
 
   onMessageListener()
     .then((payload: any) => {
       setShow(true);
-      setNotification({ title: payload.notification.title, body: payload.notification.body });
       console.log(payload);
     })
     .catch((err) => console.log('failed: ', err));
@@ -112,8 +142,11 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
     setMenuOpen(false);
   };
 
-  const handleScanTable = (data: string) => {
+  const handleScanTable = (data: SelectedTable) => {
+    console.log({ data });
+
     setSelectedTable(data);
+    localStorage.setItem('selectedTable', JSON.stringify(data));
     history.push('/table');
   };
 
@@ -165,7 +198,7 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
 
   const menuProps = { parts, selectedTable: !!selectedTable, handleDrawerClose, menuOpen };
   const routerProps = {
-    tablePageProps: { scanTable: handleScanTable, selectedTable },
+    tablePageProps: { selectedTable },
     scanPageProps: { scanTable: handleScanTable },
     adminPageProps: { adminAuth, handleAdminAuth, pincodeLength: adminPincode.length },
     ordersPageProps: { adminAuth },
@@ -209,8 +242,6 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
             <Typography variant="h6" noWrap className={classes.title}>
               <span>{title}</span>
               {!menuOpen && <span className={classes.version}>v{version}</span>}
-              {isTokenFound && <h1> Notification permission enabled 👍🏻 </h1>}
-              {!isTokenFound && <h1> Need notification permission ❗️ </h1>}
             </Typography>
           </Toolbar>
         </AppBar>

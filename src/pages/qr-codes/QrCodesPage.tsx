@@ -10,7 +10,7 @@ import {
   Theme,
 } from '@material-ui/core';
 import { useGetData } from 'hooks/useGetData';
-import { TableStatus } from 'interfaces/table';
+import { SelectedTable, TableStatus } from 'interfaces/table';
 import { useState } from 'react';
 import QRCode from 'react-qr-code';
 import { Redirect } from 'react-router-dom';
@@ -49,7 +49,7 @@ const QrCodesPage: React.FC<QrCodesPageProps> = ({ adminAuth }) => {
   const classes = useStyles();
 
   const [tables] = useGetData('Tables');
-  const [selectedTables, setSelectedTables] = useState<{ id: string; name: string }[]>([]);
+  const [selectedTables, setSelectedTables] = useState<SelectedTable[]>([]);
   const [showQrCodes, setShowQrCodes] = useState(false);
 
   const toggleShowQrCodes = () => setShowQrCodes(!showQrCodes);
