@@ -125,7 +125,7 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
   // }
 
   const [show, setShow] = useState(false);
-  const [notification, setNotification] = useState({ title: '', body: '' });
+  const [notification] = useState({ title: '', body: '' });
 
   onMessageListener()
     .then((payload: any) => {
