@@ -44,7 +44,6 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
   const [totalAmount, setTotalAmount] = useState(0.0);
 
   const [products] = useGetData('Products');
-  const [tables] = useGetData('Tables');
 
   const handleAddProduct = (productId: string) => {
     const product = products.filter((p) => p.id === productId)[0].value;

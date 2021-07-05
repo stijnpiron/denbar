@@ -1,6 +1,5 @@
 import { Card, CardActions, CardContent, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
 import NewReleasesIcon from '@material-ui/icons/NewReleases';
-import firebase from 'firebase';
 import { useGetData } from 'hooks/useGetData';
 import { OrderProduct } from 'interfaces/order';
 
@@ -16,8 +15,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-
-const db = firebase.firestore();
 
 const OrdersPage: React.FC<OrdersPageProps> = ({ adminAuth }) => {
   const classes = useStyles();
