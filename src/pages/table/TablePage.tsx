@@ -83,6 +83,7 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
   };
 
   const handlePlaceOrder = () => {
+    const newTableAmount = (selectedTable.amount || 0) + totalAmount;
     db.collection('Orders')
       .add({
         tableId: selectedTable.id,
@@ -92,11 +93,20 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
         amount: totalAmount,
         status: OrderStatus.NEW,
       })
-      .then(() => clearOrder())
+      .then(() =>
+        db
+          .collection('Tables')
+          .doc(selectedTable.id)
+          .update({ amount: newTableAmount.toFixed(2) })
+          .then(() => {
+            localStorage.setItem('selectedTable', JSON.stringify({ ...selectedTable, amount: newTableAmount }));
+            clearOrder();
+          })
+          .catch((error: any) => {
+            console.error('Error editing table: ', error);
+          })
+      )
       .catch((error: any) => console.error('Error writing new order: ', error));
-    db.collection('Tables')
-      .doc(selectedTable.id)
-      .update({ amount: (selectedTable.amount || 0) + totalAmount });
   };
 
   return !showOrderOverview ? (
@@ -140,7 +150,12 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
             </Card>
           ))}
       </div>
-      <Button variant="contained" color="primary" onClick={() => setShowOrderOverview(true)}>
+      <Button
+        disabled={!Object.keys(selectedProducts).length}
+        variant="contained"
+        color="primary"
+        onClick={() => setShowOrderOverview(true)}
+      >
         Bestellen
       </Button>
     </>

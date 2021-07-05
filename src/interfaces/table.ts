@@ -7,6 +7,7 @@ export interface Table {
   name: string;
   amount: number;
   status: TableStatus;
+  date: string;
 }
 
 export interface FirestoreTable {
