@@ -13,6 +13,7 @@ import { SelectedTable } from 'interfaces/table';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { getAdminAuth } from 'utils/adminAuth';
 import { onMessageListener } from 'utils/firebase';
 import Menu from './components/Menu';
 import Router from './components/Router';
@@ -100,7 +101,7 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
   const classes = useStyles();
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedTable, setSelectedTable] = useState<SelectedTable>(getSelectedTableData());
-  const [adminAuth, setAdminAuth] = useState(moment(localStorage.getItem('admin')) > moment().subtract(1, 'second'));
+  const [adminAuth, setAdminAuth] = useState(moment(getAdminAuth()) > moment().subtract(10, 'seconds'));
   // const db = firebase.firestore();
   // const [newOrders, setNewOrders] = useState<string[]>([]);
 

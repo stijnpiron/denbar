@@ -2,9 +2,9 @@ import { SelectedTable } from 'interfaces/table';
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import AdminPage from '../../pages/admin/AdminPage';
-import CheckoutPage from '../../pages/checkout/CheckoutPage';
-import OrdersPage from '../../pages/orders/OrdersPage';
-import QrCodesPage from '../../pages/qr-codes/QrCodesPage';
+import CheckoutPage from '../../pages/admin/checkout/CheckoutPage';
+import OrdersPage from '../../pages/admin/orders/OrdersPage';
+import QrCodesPage from '../../pages/admin/qr-codes/QrCodesPage';
 import ScanPage from '../../pages/scanPage/ScanPage';
 import TablePage from '../../pages/table/TablePage';
 
