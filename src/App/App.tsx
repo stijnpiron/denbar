@@ -14,7 +14,6 @@ import moment from 'moment';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { getAdminAuth } from 'utils/adminAuth';
-import { onMessageListener } from 'utils/firebase';
 import Menu from './components/Menu';
 import Router from './components/Router';
 
@@ -127,13 +126,6 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
 
   const [show, setShow] = useState(false);
   const [notification] = useState({ title: '', body: '' });
-
-  onMessageListener()
-    .then((payload: any) => {
-      setShow(true);
-      console.log(payload);
-    })
-    .catch((err) => console.log('failed: ', err));
 
   const handleDrawerOpen = () => {
     setMenuOpen(true);
