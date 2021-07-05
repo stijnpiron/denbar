@@ -22,17 +22,23 @@ import {
 import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
 import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
 import AddRoundedIcon from '@material-ui/icons/AddRounded';
+import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import EuroIcon from '@material-ui/icons/Euro';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 import { useGetData } from 'hooks/useGetData';
+import { OrderStatus } from 'interfaces/order';
 import { FirestoreProduct, Product } from 'interfaces/product';
 import { Table, TableStatus } from 'interfaces/table';
+import moment from 'moment';
 import { useEffect, useRef, useState } from 'react';
 import ReactCodeInput from 'react-code-input';
 import { useHistory } from 'react-router-dom';
+import { setAdminAuthAndReload } from 'utils/adminAuth';
 
 interface AdminPageProps {
   adminAuth: boolean;
@@ -81,6 +87,14 @@ const useStyles = makeStyles((theme: Theme) =>
       minWidth: 275,
       margin: 15,
     },
+    disabledCard: {
+      minWidth: 275,
+      background: 'lightgrey',
+      margin: 15,
+      '& > * + *': {
+        color: 'grey',
+      },
+    },
     pinCode: {
       margin: 'auto',
       display: 'flex',
@@ -104,7 +118,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const newProductTemplate: Product = { name: '', price: 0.0 };
 const editProductTemplate: FirestoreProduct = { id: '', value: { name: '', price: 0.0 } };
-const newTableTemplate: Table = { name: '', amount: 0.0, status: TableStatus.OPEN };
+const newTableTemplate: Table = { name: '', amount: 0.0, status: TableStatus.OPEN, date: '' };
 
 const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pincodeLength }) => {
   const classes = useStyles();
@@ -126,6 +140,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
 
   const [products] = useGetData('Products');
   const [tables] = useGetData('Tables');
+  const [orders] = useGetData('Orders');
 
   const handlePinCodeChange = (data: any) => setPincode(data);
   const handleAddProductDialogOpen = () => setAddProductDialog(true);
@@ -153,13 +168,15 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
   const handleAddProduct = () => {
     db.collection('Products')
       .add({ ...newProduct })
+      .then(() => setAdminAuthAndReload())
       .catch((error: any) => console.error('Error writing adding new product: ', error));
     handleAddProductDialogClose();
   };
 
   const handleAddTable = () => {
     db.collection('Tables')
-      .add({ ...newTable })
+      .add({ ...newTable, date: moment().format('DD/MM/yyyy').toString() })
+      .then(() => setAdminAuthAndReload())
       .catch((error: any) => console.error('Error writing adding new table: ', error));
     handleAddTableDialogClose();
   };
@@ -173,10 +190,18 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
     db.collection('Products')
       .doc(editProduct.id)
       .update({ name: editProduct.value.name, price: editProduct.value.price })
+      .then(() => setAdminAuthAndReload())
       .catch((error: any) => {
         console.error('Error editing document: ', error);
       });
     handleEditProductDialogClose();
+  };
+
+  const handleCloseTable = (tableId: string) => {
+    db.collection('Tables')
+      .doc(tableId)
+      .update({ status: 'closed' })
+      .then(() => setAdminAuthAndReload());
   };
 
   const handleRemoveProduct = (productId: string) =>
@@ -184,6 +209,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
       .collection('Products')
       .doc(productId)
       .delete()
+      .then(() => setAdminAuthAndReload())
       .catch((error: any) => {
         console.error('Error removing document: ', error);
       });
@@ -333,34 +359,75 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                     <Icon>qr_code</Icon>
                   </IconButton>
                 </div>
-                {tables
-                  .sort((a, b) => (a.value.name > b.value.name ? 1 : -1))
-                  .map((t) => (
-                    <Card className={classes.card} key={t.id}>
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="h2">
-                          {t.value.name}
-                        </Typography>
-                        <Typography variant="body2" color="textSecondary" component="p">
-                          € {t.value.amount}
-                        </Typography>
-                      </CardContent>
-                      {/* <CardActions>
-                        <IconButton aria-label="edit table" color="primary" component="span">
+                <>
+                  {tables
+                    .filter((t) => t.value.status !== 'closed')
+                    .sort((a, b) => (a.value.name > b.value.name ? 1 : -1))
+                    .map((t) => (
+                      <Card className={classes.card} key={t.id}>
+                        <CardContent>
+                          {t.value.status === TableStatus.PAYED && <EuroIcon />}
+                          <Typography gutterBottom variant="h5" component="h2">
+                            {t.value.name} - {t.value.date}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary" component="p">
+                            € {t.value.amount}
+                          </Typography>
+                        </CardContent>
+                        <CardActions>
+                          {/* <IconButton aria-label="edit table" color="primary" component="span">
                           <EditIcon />
-                        </IconButton>
-                        <IconButton aria-label="remove table" color="secondary" component="span">
-                          <DeleteIcon />
-                        </IconButton>
-                        <IconButton aria-label="close table" color="secondary" component="span">
+                        </IconButton> */}
+                          <IconButton
+                            disabled={
+                              orders
+                                .filter((o) => o.value.tableId === t.id)
+                                .filter(
+                                  (o) => o.value.status === OrderStatus.NEW || o.value.status === OrderStatus.OPENED
+                                ).length > 0 || t.value.amount > 0
+                            }
+                            aria-label="remove table"
+                            color="secondary"
+                            component="span"
+                            onClick={() => handleCloseTable(t.id)}
+                          >
+                            {orders
+                              .filter((o) => o.value.tableId === t.id)
+                              .filter(
+                                (o) => o.value.status === OrderStatus.NEW || o.value.status === OrderStatus.OPENED
+                              ).length > 0 ? (
+                              <div>Tafel afsluiten gaat niet: openstaande bestelling(en) voor deze tafel</div>
+                            ) : t.value.amount > 0 ? (
+                              <div>Tafel afsluiten gaat niet: openstaand saldo voor deze tafel</div>
+                            ) : (
+                              <CloseIcon />
+                            )}
+                          </IconButton>
+                          {/* <IconButton aria-label="close table" color="secondary" component="span">
                           <CloseIcon />
                         </IconButton>
                         <IconButton aria-label="close table" color="secondary" component="span">
                           <Icon>qr_code</Icon>
-                        </IconButton>
-                      </CardActions> */}
-                    </Card>
-                  ))}
+                        </IconButton> */}
+                        </CardActions>
+                      </Card>
+                    ))}
+                  {tables
+                    .filter((t) => t.value.status === 'closed')
+                    .sort((a, b) => (a.value.name > b.value.name ? 1 : -1))
+                    .map((t) => (
+                      <Card className={classes.disabledCard} key={t.id}>
+                        <CardContent>
+                          <Typography gutterBottom variant="h5" component="h2">
+                            {t.value.name} - {t.value.date}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary" component="p">
+                            € {t.value.amount}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    ))}
+                </>
               </AccordionDetails>
             </Accordion>
           </div>
