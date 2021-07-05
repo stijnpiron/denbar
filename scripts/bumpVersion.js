@@ -13,11 +13,13 @@ let packagesJson = [
 packagesJson = packagesJson
   .map((pj) => ({ ...pj, data: require(pj.location) }))
   .map((pj) => {
+    const buildNumber = pj.data.buildNumber ? parseInt(pj.data.buildNumber, 10) + 1 : 1;
+    console.log(`buildnumber bumped: ${pj.location}/${buildNumber}`);
     return {
       ...pj,
       version:
         pj.data.version.split('-').length > 1 ? pj.data.version.split('-').slice(0, -1).join('-') : pj.data.version,
-      buildNumber: pj.data.buildNumber ? parseInt(pj.data.buildNumber, 10) + 1 : 1,
+      buildNumber,
     };
   });
 // console.info(packagesJson);

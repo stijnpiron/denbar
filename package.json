@@ -1,7 +1,7 @@
 {
   "name": "denbar",
-  "version": "0.2.0-64",
-  "buildNumber": 64,
+  "version": "0.2.0-101",
+  "buildNumber": 101,
   "private": true,
   "scripts": {
     "build": "yarn bump:build && react-scripts build",
@@ -32,6 +32,8 @@
     "@material-ui/lab": "4.0.0-alpha.58",
     "eslint": "^7.29.0",
     "firebase": "^8.6.8",
+    "firebase-admin": "^9.10.0",
+    "moment": "^2.29.1",
     "react": "^17.0.2",
     "react-code-input": "^3.10.1",
     "react-dom": "^17.0.2",

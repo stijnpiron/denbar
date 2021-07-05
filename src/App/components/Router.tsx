@@ -1,3 +1,4 @@
+import { SelectedTable } from 'interfaces/table';
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import AdminPage from '../../pages/admin/AdminPage';
@@ -8,8 +9,8 @@ import ScanPage from '../../pages/scanPage/ScanPage';
 import TablePage from '../../pages/table/TablePage';
 
 interface RouterProps {
-  tablePageProps: { scanTable: (data: string) => void; selectedTable: string };
-  scanPageProps: { scanTable: (data: string) => void };
+  tablePageProps: { selectedTable: SelectedTable };
+  scanPageProps: { scanTable: (data: SelectedTable) => void };
   adminPageProps: { adminAuth: boolean; handleAdminAuth: (pincode: any) => boolean; pincodeLength: number };
   ordersPageProps: { adminAuth: boolean };
   checkoutPageProps: { adminAuth: boolean };
@@ -25,12 +26,12 @@ const Router: React.FC<RouterProps> = ({
   qrCodesPageProps,
 }) => (
   <Switch>
-    <Route exact path={['/', '/scan']} render={(): React.ReactElement => <ScanPage {...scanPageProps} />} />
     <Route
       exact
-      path={['/table', '/table/:tableId']}
-      render={(): React.ReactElement => <TablePage {...tablePageProps} />}
+      path={['/', '/scan', '/table/:tableId']}
+      render={(): React.ReactElement => <ScanPage {...scanPageProps} />}
     />
+    <Route exact path="/table" render={(): React.ReactElement => <TablePage {...tablePageProps} />} />
     <Route exact path="/admin" render={(): React.ReactElement => <AdminPage {...adminPageProps} />} />
     <Route exact path="/orders" render={(): React.ReactElement => <OrdersPage {...ordersPageProps} />} />
     <Route exact path="/checkout" render={(): React.ReactElement => <CheckoutPage {...checkoutPageProps} />} />

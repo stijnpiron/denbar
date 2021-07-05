@@ -1,6 +1,7 @@
 export enum TableStatus {
   OPEN = 'open',
   PAYED = 'payed',
+  CLOSED = 'closed',
 }
 export interface Table {
   name: string;
@@ -11,4 +12,11 @@ export interface Table {
 export interface FirestoreTable {
   id: string;
   value: Table;
+}
+
+export interface SelectedTable {
+  id: string;
+  name: string;
+  scanned?: string;
+  amount?: number;
 }
