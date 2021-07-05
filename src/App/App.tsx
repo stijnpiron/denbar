@@ -101,29 +101,6 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedTable, setSelectedTable] = useState<SelectedTable>(getSelectedTableData());
   const [adminAuth, setAdminAuth] = useState(moment(getAdminAuth()) > moment().subtract(10, 'seconds'));
-  // const db = firebase.firestore();
-  // const [newOrders, setNewOrders] = useState<string[]>([]);
-
-  // TODO: fix new order notification
-  // if (adminAuth) {
-  // db.collection('Orders').onSnapshot((s) => {
-  //   // let arr: any[] = [];
-  //   s.docs.forEach((o) => {
-  //     if (o.data().status === 'new') {
-  //       if (!newOrders.includes(o.id)) {
-  //         setNotification({ title: 'Nieuwe bestelling', body: `Bestelling ontvangen` });
-  //         setShow(true);
-  //       }
-  //       setNewOrders([...newOrders, o.id]);
-  //     }
-  //   });
-  // const newOrders = arr.filter((o) => o.value.status === 'new').length;
-
-  // console.log(newOrders);
-  // if (orders.filter((o) => o.value.status === 'new').length) {
-  // });
-  // }
-
   const [show, setShow] = useState(false);
   const [notification] = useState({ title: '', body: '' });
 
@@ -136,8 +113,7 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
   };
 
   const handleScanTable = (data: SelectedTable) => {
-    console.log({ data });
-
+    debugger;
     setSelectedTable(data);
     localStorage.setItem('selectedTable', JSON.stringify(data));
     history.push('/table');
@@ -161,7 +137,7 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
         text: 'Tafel scannen',
       },
     ],
-    [{ icon: 'local_bar', key: 'Bestellen', route: 'table', text: 'Bestel' }],
+    [{ icon: 'local_bar', disabled: !selectedTable.id, key: 'Bestellen', route: 'table', text: 'Bestel' }],
     [
       {
         alwaysEnabled: true,

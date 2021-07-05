@@ -55,12 +55,16 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ adminAuth }) => {
   };
 
   const handleCancelOrder = async (orderId: string, tableId: string, orderAmount: number) => {
-    db.collection('Orders').doc(orderId).update({ status: OrderStatus.CANCELED });
-    const tableAmount = tables.filter((t) => t.id === tableId)[0].value.amount; // tables[tableId].value.amount
-    db.collection('Tables')
-      .doc(tableId)
-      .update({ amount: tableAmount - orderAmount })
-      .then(() => setAdminAuthAndReload());
+    db.collection('Orders')
+      .doc(orderId)
+      .update({ status: OrderStatus.CANCELED })
+      .then(() => {
+        const tableAmount = tables.filter((t) => t.id === tableId)[0].value.amount;
+        db.collection('Tables')
+          .doc(tableId)
+          .update({ amount: tableAmount - orderAmount })
+          .then(() => setAdminAuthAndReload());
+      });
   };
 
   return (
