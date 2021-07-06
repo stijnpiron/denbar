@@ -113,9 +113,8 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
     ) : !showOrderOverview ? (
       <>
         <div>Plaats een bestelling voor tafel {selectedTable.name}</div>
-        {/* <div>{JSON.stringify(selectedTable.amount)}</div> */}
         <div>Totaal reeds geplaatste bestellingen: € {selectedTable?.amount || 0}</div>
-        <div>Totaal voor deze bestelling: € {totalAmount.toFixed(2)}</div>
+        <div>Totaal voor deze bestelling: € {totalAmount}</div>
         <div className={classes.overflow}>
           {products
             .sort((a, b) => (a.value.name > b.value.name ? 1 : -1))
