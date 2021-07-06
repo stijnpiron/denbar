@@ -1,6 +1,4 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/firestore';
+import firebase from 'firebase';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_APIKEY,
@@ -12,10 +10,10 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENTID,
   vapidKey: process.env.REACT_APP_FIREBASE_VAPIDKEY,
 };
-const firebaseAuth = {
-  user: process.env.REACT_APP_FIREBASE_USER || '',
-  password: process.env.REACT_APP_FIREBASE_PASSWORD || '',
-};
+// const firebaseAuth = {
+//   user: process.env.REACT_APP_FIREBASE_USER || '',
+//   password: process.env.REACT_APP_FIREBASE_PASSWORD || '',
+// };
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 } else {
@@ -23,7 +21,8 @@ if (!firebase.apps.length) {
 }
 firebase
   .auth()
-  .signInWithEmailAndPassword(firebaseAuth.user, firebaseAuth.password)
+  // .signInWithEmailAndPassword(firebaseAuth.user, firebaseAuth.password)
+  .signInAnonymously()
   .catch((error) => {
     var errorCode = error.code;
     var errorMessage = error.message;
