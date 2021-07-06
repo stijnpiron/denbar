@@ -113,7 +113,6 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
   };
 
   const handleScanTable = (data: SelectedTable) => {
-    debugger;
     setSelectedTable(data);
     localStorage.setItem('selectedTable', JSON.stringify(data));
     history.push('/table');

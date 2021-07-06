@@ -37,22 +37,30 @@ const ScanPage: React.FC<ScanPageProps> = ({ scanTable }) => {
   let { tableId } = useParams<ScanPageParams>();
 
   const handleScan = (data: string | null) => {
-    if (data) {
+    if (!scanSuccess && data && tables.length > 0) {
       const scannedId = data.replace(`${window.location.origin}/#/table/`, '');
       const scannedTable = tables.filter((t) => t.id === scannedId)[0];
+      if (scannedTable) {
+        console.log({ tables, scannedTable });
 
-      const { name, amount, status } = scannedTable.value;
+        const { name, amount, status } = scannedTable.value;
 
-      if (status !== TableStatus.OPEN) {
+        if (status !== TableStatus.OPEN) {
+          setFeedbackMessage('foutieve tafelcode gescand, vraag hulp aan het bar team');
+          setScanSuccess(false);
+          setFeedbackVisible(true);
+          localStorage.removeItem('selectedTable');
+        } else {
+          setFeedbackMessage('Tafel gescand, start met bestellen');
+          setScanSuccess(true);
+          setFeedbackVisible(true);
+          scanTable({ id: scannedTable.id, name, amount, scanned: new Date().toString() });
+        }
+      } else {
         setFeedbackMessage('foutieve tafelcode gescand, vraag hulp aan het bar team');
         setScanSuccess(false);
         setFeedbackVisible(true);
         localStorage.removeItem('selectedTable');
-      } else {
-        setFeedbackMessage('Tafel gescand, start met bestellen');
-        setScanSuccess(true);
-        setFeedbackVisible(true);
-        scanTable({ id: scannedTable.id, name, amount, scanned: new Date().toString() });
       }
     }
   };

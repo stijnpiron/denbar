@@ -12,8 +12,7 @@ import {
 import CancelIcon from '@material-ui/icons/Cancel';
 import CheckIcon from '@material-ui/icons/Check';
 import NewReleasesIcon from '@material-ui/icons/NewReleases';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+import firebase from 'firebase';
 import { useGetData } from 'hooks/useGetData';
 import { OrderProduct, OrderStatus } from 'interfaces/order';
 import { setAdminAuth, setAdminAuthAndReload } from 'utils/adminAuth';

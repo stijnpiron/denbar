@@ -1,5 +1,4 @@
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+import firebase from 'firebase';
 import { useEffect, useState } from 'react';
 export const useGetData = (collection: string) => {
   const [documents, setDocuments] = useState<any[]>([]);
@@ -12,7 +11,8 @@ export const useGetData = (collection: string) => {
         let arr: any[] = [];
         qs.docs.map((d) => arr.push({ id: d.id, value: d.data() }));
         setDocuments(arr);
-      });
+      })
+      .catch((e) => console.log('Error during fetching data for collection: ' + collection + ':' + e));
   }, [collection, db]);
   return [documents];
 };

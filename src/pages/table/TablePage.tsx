@@ -11,8 +11,7 @@ import {
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+import firebase from 'firebase';
 import { useGetData } from 'hooks/useGetData';
 import { OrderProducts, OrderStatus } from 'interfaces/order';
 import { SelectedTable, TableStatus } from 'interfaces/table';
@@ -38,7 +37,6 @@ const useStyles = makeStyles((theme: Theme) =>
 const db = firebase.firestore();
 
 const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
-  debugger;
   const classes = useStyles();
 
   const [selectedProducts, setSelectedProducts] = useState<OrderProducts>({});
@@ -108,8 +106,6 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
       )
       .catch((error: any) => console.error('Error writing new order: ', error));
   };
-  console.log(tables.filter((t) => t.id === selectedTable.id));
-  console.log(tables.filter((t) => t.id === selectedTable.id).filter((t) => t.value.status === TableStatus.OPEN));
 
   // tables.filter((t) => t.id === selectedTable.id).filter((t) => t.value.status === TableStatus.OPEN).length ===
   // 0
