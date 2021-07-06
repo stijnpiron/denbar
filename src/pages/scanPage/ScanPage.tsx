@@ -41,8 +41,6 @@ const ScanPage: React.FC<ScanPageProps> = ({ scanTable }) => {
       const scannedId = data.replace(`${window.location.origin}/#/table/`, '');
       const scannedTable = tables.filter((t) => t.id === scannedId)[0];
       if (scannedTable) {
-        console.log({ tables, scannedTable });
-
         const { name, amount, status } = scannedTable.value;
 
         if (status !== TableStatus.OPEN) {
