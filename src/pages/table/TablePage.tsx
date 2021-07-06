@@ -107,16 +107,14 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
       .catch((error: any) => console.error('Error writing new order: ', error));
   };
 
-  // tables.filter((t) => t.id === selectedTable.id).filter((t) => t.value.status === TableStatus.OPEN).length ===
-  // 0
-
   return tables.length ? (
     tables.filter((t) => t.id === selectedTable.id).filter((t) => t.value.status === TableStatus.OPEN).length === 0 ? (
       <Redirect to="/scan" />
     ) : !showOrderOverview ? (
       <>
         <div>Plaats een bestelling voor tafel {selectedTable.name}</div>
-        <div>Totaal reeds geplaatste bestellingen: € {selectedTable?.amount?.toFixed(2) || 0}</div>
+        {/* <div>{JSON.stringify(selectedTable.amount)}</div> */}
+        <div>Totaal reeds geplaatste bestellingen: € {selectedTable?.amount || 0}</div>
         <div>Totaal voor deze bestelling: € {totalAmount.toFixed(2)}</div>
         <div className={classes.overflow}>
           {products
