@@ -67,15 +67,15 @@ const ScanPage: React.FC<ScanPageProps> = ({ scanTable }) => {
     handleScan(tableId);
   }
 
-  const handleError = (err: any) => console.error(err);
+  // const handleError = (err: any) => console.error(err);
 
   const handleFeedbackClose = () => setFeedbackVisible(false);
 
-  const previewStyle = {
-    margin: 'auto',
-    maxWidth: '400px',
-    maxHeight: '320px',
-  };
+  // const previewStyle = {
+  //   margin: 'auto',
+  //   maxWidth: '400px',
+  //   maxHeight: '320px',
+  // };
 
   return (
     <>
