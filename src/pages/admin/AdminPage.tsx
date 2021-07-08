@@ -117,7 +117,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const newProductTemplate: Product = { name: '', price: 0.0 };
 const editProductTemplate: FirestoreProduct = { id: '', value: { name: '', price: 0.0 } };
-const newTableTemplate: Table = { name: '', amount: 0.0, status: TableStatus.OPEN, date: '' };
+const newTableTemplate: Table = { name: '', amount: 0.0, status: TableStatus.OPEN, date: '', note: '' };
 
 const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pincodeLength }) => {
   const classes = useStyles();
@@ -369,6 +369,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                           <Typography gutterBottom variant="h5" component="h2">
                             {t.value.name} - {t.value.date}
                           </Typography>
+                          <Typography variant="body1" color="textSecondary" component="p">
+                            {t.value.note}
+                          </Typography>
                           <Typography variant="body2" color="textSecondary" component="p">
                             € {t.value.amount}
                           </Typography>
@@ -527,9 +530,18 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                   <TextField
                     variant="outlined"
                     type="text"
-                    label="TableName"
+                    label="Tafel naam"
                     onChange={(e: React.ChangeEvent<any>): void => handleNewTablePropertyChanged('name', e)}
                     value={newTable?.name}
+                  ></TextField>
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                  <TextField
+                    variant="outlined"
+                    type="text"
+                    label="Tafel notitie"
+                    onChange={(e: React.ChangeEvent<any>): void => handleNewTablePropertyChanged('note', e)}
+                    value={newTable?.note}
                   ></TextField>
                 </FormControl>
               </form>

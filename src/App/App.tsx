@@ -128,15 +128,15 @@ const App: React.FC<AppProps> = ({ title, version, adminPincode }) => {
 
   const parts: MenuItem[][] = [
     [
-      {
-        alwaysEnabled: true,
-        icon: 'qr_code_scanner',
-        key: 'TafelScannen',
-        route: 'scan',
-        text: 'Tafel scannen',
-      },
+      // {
+      //   alwaysEnabled: true,
+      //   icon: 'qr_code_scanner',
+      //   key: 'TafelScannen',
+      //   route: 'scan',
+      //   text: 'Tafel scannen',
+      // },
+      { icon: 'local_bar', disabled: !selectedTable.id, key: 'Bestellen', route: 'table', text: 'Bestel' },
     ],
-    [{ icon: 'local_bar', disabled: !selectedTable.id, key: 'Bestellen', route: 'table', text: 'Bestel' }],
     [
       {
         alwaysEnabled: true,

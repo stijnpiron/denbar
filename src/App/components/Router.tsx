@@ -6,6 +6,7 @@ import CheckoutPage from '../../pages/admin/checkout/CheckoutPage';
 import OrdersPage from '../../pages/admin/orders/OrdersPage';
 import QrCodesPage from '../../pages/admin/qr-codes/QrCodesPage';
 import ScanPage from '../../pages/scanPage/ScanPage';
+import StartPage from '../../pages/start/StartPage';
 import TablePage from '../../pages/table/TablePage';
 
 interface RouterProps {
@@ -26,11 +27,8 @@ const Router: React.FC<RouterProps> = ({
   qrCodesPageProps,
 }) => (
   <Switch>
-    <Route
-      exact
-      path={['/', '/scan', '/table/:tableId']}
-      render={(): React.ReactElement => <ScanPage {...scanPageProps} />}
-    />
+    <Route exact path="/" render={(): React.ReactElement => <StartPage />} />
+    <Route exact path={'/table/:tableId'} render={(): React.ReactElement => <ScanPage {...scanPageProps} />} />
     <Route exact path="/table" render={(): React.ReactElement => <TablePage {...tablePageProps} />} />
     <Route exact path="/admin" render={(): React.ReactElement => <AdminPage {...adminPageProps} />} />
     <Route exact path="/orders" render={(): React.ReactElement => <OrdersPage {...ordersPageProps} />} />

@@ -3,7 +3,7 @@ import { Alert } from '@material-ui/lab';
 import { useGetData } from 'hooks/useGetData';
 import { SelectedTable, TableStatus } from 'interfaces/table';
 import { useState } from 'react';
-import QrReader from 'react-qr-reader';
+// import QrReader from 'react-qr-reader';
 import { useParams } from 'react-router-dom';
 
 // TODO: check if webcam is enabled or not
@@ -67,15 +67,15 @@ const ScanPage: React.FC<ScanPageProps> = ({ scanTable }) => {
     handleScan(tableId);
   }
 
-  const handleError = (err: any) => console.error(err);
+  // const handleError = (err: any) => console.error(err);
 
   const handleFeedbackClose = () => setFeedbackVisible(false);
 
-  const previewStyle = {
-    margin: 'auto',
-    maxWidth: '400px',
-    maxHeight: '320px',
-  };
+  // const previewStyle = {
+  //   margin: 'auto',
+  //   maxWidth: '400px',
+  //   maxHeight: '320px',
+  // };
 
   return (
     <>
@@ -91,7 +91,7 @@ const ScanPage: React.FC<ScanPageProps> = ({ scanTable }) => {
           {feedbackMessage}
         </Alert>
       </Snackbar>
-      <QrReader delay={100} resolution={1000} style={previewStyle} onError={handleError} onScan={handleScan} />
+      {/* <QrReader delay={100} resolution={1000} style={previewStyle} onError={handleError} onScan={handleScan} /> */}
     </>
   );
 };
