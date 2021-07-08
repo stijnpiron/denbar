@@ -8,6 +8,7 @@ export interface Table {
   amount: number;
   status: TableStatus;
   date: string;
+  note: string;
 }
 
 export interface FirestoreTable {

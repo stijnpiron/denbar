@@ -1,7 +1,7 @@
 {
   "name": "denbar",
-  "version": "0.9.0-133",
-  "buildNumber": 133,
+  "version": "0.9.0-135",
+  "buildNumber": 135,
   "private": true,
   "scripts": {
     "build": "yarn bump:build && react-scripts build",
