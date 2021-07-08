@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flexFlow: 'row wrap',
     },
     qrCodeTitle: {
-      fontSize: 24,
+      fontSize: 20,
       fontWeight: 900,
       marginBottom: 25,
     },
@@ -110,7 +110,10 @@ const QrCodesPage: React.FC<QrCodesPageProps> = ({ adminAuth }) => {
               {selectedTables.map((t) => (
                 <div className={classes.qrCode} key={t.id}>
                   <div className={classes.qrCodeTitle}>Tafel: {t.name}</div>
-                  <QRCode value={`${process.env.REACT_APP_LOCALHOST || window.location.origin}/#/table/${t.id}`} />
+                  <QRCode
+                    value={`${process.env.REACT_APP_LOCALHOST || window.location.origin}/#/table/${t.id}`}
+                    size={128}
+                  />
                 </div>
               ))}
             </div>
