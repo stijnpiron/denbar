@@ -386,7 +386,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                                 .filter((o) => o.value.tableId === t.id)
                                 .filter(
                                   (o) => o.value.status === OrderStatus.NEW || o.value.status === OrderStatus.OPENED
-                                ).length > 0 || t.value.amount > 0
+                                ).length > 0 || t.value.status !== TableStatus.PAYED
                             }
                             aria-label="remove table"
                             color="secondary"
