@@ -48,6 +48,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ adminAuth }) => {
     <>
       {!adminAuth && <Redirect to="/admin" />}
       <div>Afrekenen</div>
+      {tables.filter(
+        (t) => t.value.status !== TableStatus.CLOSED && t.value.status !== TableStatus.PAYED && t.value.amount > 0
+      ).length === 0 && <div>Geen tafels met openstaand saldo om af te rekenen.</div>}
       {tables
         .filter(
           (t) => t.value.status !== TableStatus.CLOSED && t.value.status !== TableStatus.PAYED && t.value.amount > 0

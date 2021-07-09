@@ -113,8 +113,10 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
     ) : !showOrderOverview ? (
       <>
         <div>Plaats een bestelling voor tafel {selectedTable.name}</div>
-        <div>Totaal reeds geplaatste bestellingen: € {selectedTable?.amount || 0}</div>
-        <div>Totaal voor deze bestelling: € {totalAmount}</div>
+        <div>
+          Totaal reeds geplaatste bestellingen: € {parseFloat(selectedTable?.amount?.toString() || '0').toFixed(2) || 0}
+        </div>
+        <div>Totaal voor deze bestelling: € {parseFloat(totalAmount.toString()).toFixed(2) || 0}</div>
         <div className={classes.overflow}>
           {products
             .sort((a, b) => (a.value.name > b.value.name ? 1 : -1))
@@ -130,15 +132,6 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
                 </CardContent>
                 <CardActions>
                   <IconButton
-                    aria-label="edit product"
-                    color="primary"
-                    component="span"
-                    onClick={() => handleAddProduct(p.id)}
-                  >
-                    <AddIcon />
-                  </IconButton>
-                  <div>{selectedProducts[p.id]?.count || 0}</div>
-                  <IconButton
                     aria-label="remove product"
                     color="secondary"
                     component="span"
@@ -146,6 +139,15 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
                     onClick={() => handleRemoveProduct(p.id)}
                   >
                     <RemoveIcon />
+                  </IconButton>
+                  <div>{selectedProducts[p.id]?.count || 0}</div>
+                  <IconButton
+                    aria-label="add product"
+                    color="primary"
+                    component="span"
+                    onClick={() => handleAddProduct(p.id)}
+                  >
+                    <AddIcon />
                   </IconButton>
                 </CardActions>
               </Card>
