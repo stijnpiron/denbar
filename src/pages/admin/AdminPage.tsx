@@ -270,7 +270,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
             onChange={handlePinCodeChange}
             value={pincode}
           />
-          <Button disabled={pincode.length < pincodeLength} variant="contained" color="primary" onClick={handleLogin}>
+          <Button disabled={pincode.length < pincodeLength} variant="outlined" color="primary" onClick={handleLogin}>
             Login
           </Button>
         </div>

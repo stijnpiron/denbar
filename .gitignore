@@ -27,3 +27,4 @@ yarn-error.log*
 
 # environment variables for development
 .env
+.env.prd

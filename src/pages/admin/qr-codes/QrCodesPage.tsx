@@ -100,7 +100,7 @@ const QrCodesPage: React.FC<QrCodesPageProps> = ({ adminAuth }) => {
                   </ListItem>
                 ))}
             </List>
-            <Button disabled={!!!selectedTables.length} variant="contained" color="primary" onClick={toggleShowQrCodes}>
+            <Button disabled={!!!selectedTables.length} variant="outlined" color="primary" onClick={toggleShowQrCodes}>
               Toon QR Codes
             </Button>
           </>

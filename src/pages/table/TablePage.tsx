@@ -3,6 +3,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  CircularProgress,
   createStyles,
   IconButton,
   makeStyles,
@@ -14,6 +15,7 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import firebase from 'firebase';
 import { useGetData } from 'hooks/useGetData';
 import { OrderProducts, OrderStatus } from 'interfaces/order';
+import { Product } from 'interfaces/product';
 import { SelectedTable, TableStatus } from 'interfaces/table';
 import { useState } from 'react';
 import { Redirect } from 'react-router-dom';
@@ -42,13 +44,15 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
   const [selectedProducts, setSelectedProducts] = useState<OrderProducts>({});
   const [showOrderOverview, setShowOrderOverview] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0.0);
+  const [placingOrder, setPlacingOrder] = useState(false);
 
   const [products] = useGetData('Products');
   const [tables] = useGetData('Tables');
 
   const handleAddProduct = (productId: string) => {
-    const product = products.filter((p) => p.id === productId)[0].value;
-    setTotalAmount(totalAmount + +product.price);
+    const product: Product = products.filter((p) => p.id === productId)[0].value;
+    const newTotalAmount = totalAmount + +parseFloat(product.price.toString()).toFixed(2);
+    setTotalAmount(newTotalAmount);
     setSelectedProducts({
       ...selectedProducts,
       [productId]: {
@@ -81,7 +85,9 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
   };
 
   const handlePlaceOrder = () => {
-    const newTableAmount = (selectedTable.amount || 0) + totalAmount;
+    setPlacingOrder(true);
+    const table = tables.filter((t) => t.id === selectedTable.id)[0];
+    const newTableAmount = (parseFloat(table.value.amount) || 0) + totalAmount;
     db.collection('Orders')
       .add({
         tableId: selectedTable.id,
@@ -95,7 +101,7 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
         db
           .collection('Tables')
           .doc(selectedTable.id)
-          .update({ amount: newTableAmount.toFixed(2) })
+          .update({ amount: parseFloat(newTableAmount.toString()).toFixed(2) })
           .then(() => {
             localStorage.setItem('selectedTable', JSON.stringify({ ...selectedTable, amount: newTableAmount }));
             clearOrder();
@@ -155,7 +161,7 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
         </div>
         <Button
           disabled={!Object.keys(selectedProducts).length}
-          variant="contained"
+          variant="outlined"
           color="primary"
           onClick={() => setShowOrderOverview(true)}
         >
@@ -181,15 +187,6 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
                 </CardContent>
                 <CardActions>
                   <IconButton
-                    aria-label="edit product"
-                    color="primary"
-                    component="span"
-                    onClick={() => handleAddProduct(p.id)}
-                  >
-                    <AddIcon />
-                  </IconButton>
-                  <div>{selectedProducts[p.id]?.count || 0}</div>
-                  <IconButton
                     aria-label="remove product"
                     color="secondary"
                     component="span"
@@ -198,6 +195,15 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
                   >
                     <RemoveIcon />
                   </IconButton>
+                  <div>{selectedProducts[p.id]?.count || 0}</div>
+                  <IconButton
+                    aria-label="edit product"
+                    color="primary"
+                    component="span"
+                    onClick={() => handleAddProduct(p.id)}
+                  >
+                    <AddIcon />
+                  </IconButton>
                 </CardActions>
               </Card>
             ))}
@@ -205,8 +211,8 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
         <Button color="secondary" onClick={() => setShowOrderOverview(false)}>
           terug
         </Button>
-        <Button variant="contained" color="primary" onClick={handlePlaceOrder}>
-          Bestellen
+        <Button variant="outlined" color="primary" onClick={handlePlaceOrder} disabled={placingOrder}>
+          {placingOrder && <CircularProgress size={20} />}&nbsp;Bestellen
         </Button>
       </>
     )
