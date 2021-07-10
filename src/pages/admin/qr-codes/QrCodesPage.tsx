@@ -96,7 +96,7 @@ const QrCodesPage: React.FC<QrCodesPageProps> = ({ adminAuth }) => {
                         inputProps={{ 'aria-labelledby': t.id }}
                       />
                     </ListItemIcon>
-                    <ListItemText id={t.id} primary={`Tafel: ${t.value.name}`} />
+                    <ListItemText id={t.id} primary={`Tafel: ${t.value.name} - ${t.value.date}`} />
                   </ListItem>
                 ))}
             </List>

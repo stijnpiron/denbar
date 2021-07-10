@@ -272,25 +272,22 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
           {feedbackMessage}
         </Alert>
       </Snackbar>
-      {!adminAuth &&
-        (pincode.length === 0 ? (
-          handleLogin
-        ) : (
-          <div className={classes.pinCode}>
-            <ReactCodeInput
-              ref={codeRef}
-              name="admin-pin"
-              inputMode="numeric"
-              type="password"
-              fields={pincodeLength}
-              onChange={handlePinCodeChange}
-              value={pincode}
-            />
-            <Button disabled={pincode.length < pincodeLength} variant="outlined" color="primary" onClick={handleLogin}>
-              Login
-            </Button>
-          </div>
-        ))}
+      {!adminAuth && (
+        <div className={classes.pinCode}>
+          <ReactCodeInput
+            ref={codeRef}
+            name="admin-pin"
+            inputMode="numeric"
+            type="password"
+            fields={pincodeLength}
+            onChange={handlePinCodeChange}
+            value={pincode}
+          />
+          <Button disabled={pincode.length < pincodeLength} variant="outlined" color="primary" onClick={handleLogin}>
+            Login
+          </Button>
+        </div>
+      )}
       {adminAuth && (
         <>
           <div>
