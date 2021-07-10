@@ -68,6 +68,8 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ adminAuth }) => {
 
   return (
     <>
+      <h1>Overzicht bestellingen</h1>
+      {orders.length === 0 && 'Geen bestellingen'}
       {orders
         .filter((o) => o.value.status !== OrderStatus.CANCELED)
         .sort((a, b) => b.value.date - a.value.date)
