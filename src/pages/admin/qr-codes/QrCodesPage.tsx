@@ -9,6 +9,7 @@ import {
   makeStyles,
   Theme,
 } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import { useGetData } from 'hooks/useGetData';
 import { SelectedTable, TableStatus } from 'interfaces/table';
 import { useState } from 'react';
@@ -40,6 +41,9 @@ const useStyles = makeStyles((theme: Theme) =>
     qrCodeTitle: {
       fontSize: 20,
       fontWeight: 900,
+      marginBottom: 25,
+    },
+    qrCodeAlert: {
       marginBottom: 25,
     },
   })
@@ -82,6 +86,9 @@ const QrCodesPage: React.FC<QrCodesPageProps> = ({ adminAuth }) => {
       <>
         {(!showQrCodes && (
           <>
+            <Alert className={classes.qrCodeAlert} severity="info">
+              Om QR codes volledig op het blad te krijgen om te printen, selecteer je best maximum 6 tafels per keer.
+            </Alert>
             <List className={classes.list}>
               {tables
                 .filter((t) => t.value.status === TableStatus.OPEN)

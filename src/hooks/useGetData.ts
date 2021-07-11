@@ -20,7 +20,6 @@ export const useGetData = (collection: string, options?: useGetDataOptions) => {
   const { queryParams, docId } = options || {};
 
   useEffect(() => {
-    debugger;
     if (!documents.length) {
       const collectionRef = db.collection(collection);
       if (docId) {
@@ -47,6 +46,7 @@ export const useGetData = (collection: string, options?: useGetDataOptions) => {
           .catch((e) => console.log('Error during fetching data for collection: ' + collection + ':' + e));
       }
     }
-  }, [collection, db, docId, documents.length, queryParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return [documents];
 };
