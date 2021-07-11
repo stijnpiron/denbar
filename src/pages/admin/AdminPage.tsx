@@ -189,7 +189,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
   const handleTableCopy = (table: Table) =>
     db
       .collection('Tables')
-      .add({ ...table, date: moment().format('DD/MM/yyyy').toString(), status: TableStatus.OPEN })
+      .add({ ...table, date: moment().format('DD/MM/yyyy').toString(), status: TableStatus.OPEN, amount: 0.0 })
       .then(() => setAdminAuthAndReload())
       .catch((error: any) => console.error('Error writing adding new table: ', error));
 
@@ -399,7 +399,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                                 .filter((o) => o.value.tableId === t.id)
                                 .filter(
                                   (o) => o.value.status === OrderStatus.NEW || o.value.status === OrderStatus.OPENED
-                                ).length > 0 || t.value.amount !== 0
+                                ).length > 0 ||
+                              (t.value.amount !== 0 && t.value.status !== TableStatus.PAYED)
                             }
                             aria-label="remove table"
                             color="secondary"
@@ -412,7 +413,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                                 (o) => o.value.status === OrderStatus.NEW || o.value.status === OrderStatus.OPENED
                               ).length > 0 ? (
                               <div>Tafel afsluiten gaat niet: openstaande bestelling(en) voor deze tafel</div>
-                            ) : t.value.amount !== 0 ? (
+                            ) : t.value.amount !== 0 && t.value.status !== TableStatus.PAYED ? (
                               <div>Tafel afsluiten gaat niet: openstaand saldo voor deze tafel</div>
                             ) : (
                               <CloseIcon />
