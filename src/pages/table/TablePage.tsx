@@ -1,8 +1,10 @@
 import {
+  Box,
   Button,
   Card,
   CardActions,
   CardContent,
+  CardHeader,
   CircularProgress,
   createStyles,
   IconButton,
@@ -19,10 +21,13 @@ import { Product } from 'interfaces/product';
 import { SelectedTable, TableStatus } from 'interfaces/table';
 import { useState } from 'react';
 import { Redirect } from 'react-router-dom';
+import scrollToTop from 'utils/scrollToTop';
 
 interface TablePageProps {
   selectedTable: SelectedTable;
 }
+
+const orderButtonHeight = 50;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -30,8 +35,38 @@ const useStyles = makeStyles((theme: Theme) =>
       minWidth: 275,
       margin: 15,
     },
+    cardContent: {
+      display: 'flex',
+      flexFlow: 'row nowrap',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingTop: 0,
+    },
+    cardHeader: {
+      paddingBottom: 0,
+    },
+    cardActions: {
+      padding: 0,
+    },
+    cardActionButton: {
+      paddingTop: 0,
+      paddingBottom: 0,
+    },
     overflow: {
       overflowY: 'scroll',
+    },
+    productList: {
+      height: `calc(100% - ${orderButtonHeight}px)`,
+    },
+    orderButton: {
+      height: orderButtonHeight,
+      width: 'calc(100% - 48px)',
+      backgroundColor: '#FAFAFA',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'fixed',
+      bottom: 0,
     },
   })
 );
@@ -48,6 +83,16 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
 
   const [products] = useGetData('Products');
   const [tables] = useGetData('Tables');
+
+  const handleShowOrderOverview = () => {
+    setShowOrderOverview(true);
+    scrollToTop();
+  };
+
+  const handleBackToPlaceOrder = () => {
+    setShowOrderOverview(false);
+    scrollToTop();
+  };
 
   const handleAddProduct = (productId: string) => {
     const product: Product = products.filter((p) => p.id === productId)[0].value;
@@ -118,102 +163,111 @@ const TablePage: React.FC<TablePageProps> = ({ selectedTable }) => {
       <Redirect to="/scan" />
     ) : !showOrderOverview ? (
       <>
-        <div>Plaats een bestelling voor tafel {selectedTable.name}</div>
-        <div>
-          Totaal reeds geplaatste bestellingen: € {parseFloat(selectedTable?.amount?.toString() || '0').toFixed(2) || 0}
+        <Box component="div" className={classes.productList}>
+          <div>Plaats een bestelling voor tafel {selectedTable.name}</div>
+          <div>
+            Totaal reeds geplaatste bestellingen: €{' '}
+            {parseFloat(selectedTable?.amount?.toString() || '0').toFixed(2) || 0}
+          </div>
+          <div>Totaal voor deze bestelling: € {parseFloat(totalAmount.toString()).toFixed(2) || 0}</div>
+          <div className={classes.overflow}>
+            {products
+              .sort((a, b) => (a.value.name > b.value.name ? 1 : -1))
+              .map((p) => (
+                <Card className={classes.card} key={p.id}>
+                  <CardHeader className={classes.cardHeader} title={p.value.name} />
+                  <CardContent className={classes.cardContent}>
+                    <Typography variant="body2" color="textSecondary" component="p">
+                      € {p.value.price}
+                    </Typography>
+                    <CardActions className={classes.cardActions}>
+                      <IconButton
+                        className={classes.cardActionButton}
+                        aria-label="remove product"
+                        color="secondary"
+                        component="span"
+                        disabled={!(selectedProducts[p.id]?.count > 0)}
+                        onClick={() => handleRemoveProduct(p.id)}
+                      >
+                        <RemoveIcon />
+                      </IconButton>
+                      <div>{selectedProducts[p.id]?.count || 0}</div>
+                      <IconButton
+                        className={classes.cardActionButton}
+                        aria-label="add product"
+                        color="primary"
+                        component="span"
+                        onClick={() => handleAddProduct(p.id)}
+                      >
+                        <AddIcon />
+                      </IconButton>
+                    </CardActions>
+                  </CardContent>
+                </Card>
+              ))}
+          </div>
+        </Box>
+        <div className={classes.orderButton}>
+          <Button
+            disabled={!Object.keys(selectedProducts).length}
+            variant="outlined"
+            color="primary"
+            onClick={handleShowOrderOverview}
+          >
+            Bestellen
+          </Button>
         </div>
-        <div>Totaal voor deze bestelling: € {parseFloat(totalAmount.toString()).toFixed(2) || 0}</div>
-        <div className={classes.overflow}>
-          {products
-            .sort((a, b) => (a.value.name > b.value.name ? 1 : -1))
-            .map((p) => (
-              <Card className={classes.card} key={p.id}>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    {p.value.name}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" component="p">
-                    € {p.value.price}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <IconButton
-                    aria-label="remove product"
-                    color="secondary"
-                    component="span"
-                    disabled={!(selectedProducts[p.id]?.count > 0)}
-                    onClick={() => handleRemoveProduct(p.id)}
-                  >
-                    <RemoveIcon />
-                  </IconButton>
-                  <div>{selectedProducts[p.id]?.count || 0}</div>
-                  <IconButton
-                    aria-label="add product"
-                    color="primary"
-                    component="span"
-                    onClick={() => handleAddProduct(p.id)}
-                  >
-                    <AddIcon />
-                  </IconButton>
-                </CardActions>
-              </Card>
-            ))}
-        </div>
-        <Button
-          disabled={!Object.keys(selectedProducts).length}
-          variant="outlined"
-          color="primary"
-          onClick={() => setShowOrderOverview(true)}
-        >
-          Bestellen
-        </Button>
       </>
     ) : (
       <>
-        <div>Overzicht bestelling</div>
-        <div>Totaal voor deze bestelling: € {totalAmount.toFixed(2)}</div>
-        <div>
-          {Object.values(selectedProducts)
-            .sort((a, b) => (a.name > b.name ? 1 : -1))
-            .map((p) => (
-              <Card className={classes.card} key={p.id}>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    {p.name}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" component="p">
-                    € {p.price}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <IconButton
-                    aria-label="remove product"
-                    color="secondary"
-                    component="span"
-                    disabled={!(selectedProducts[p.id]?.count > 0)}
-                    onClick={() => handleRemoveProduct(p.id)}
-                  >
-                    <RemoveIcon />
-                  </IconButton>
-                  <div>{selectedProducts[p.id]?.count || 0}</div>
-                  <IconButton
-                    aria-label="edit product"
-                    color="primary"
-                    component="span"
-                    onClick={() => handleAddProduct(p.id)}
-                  >
-                    <AddIcon />
-                  </IconButton>
-                </CardActions>
-              </Card>
-            ))}
+        <Box component="div" className={classes.productList}>
+          <div>Overzicht bestelling</div>
+          <div>Totaal voor deze bestelling: € {totalAmount.toFixed(2)}</div>
+          <div>
+            {Object.values(selectedProducts)
+              .sort((a, b) => (a.name > b.name ? 1 : -1))
+              .map((p) => (
+                <Card className={classes.card} key={p.id}>
+                  <CardHeader className={classes.cardHeader} title={p.name} />
+                  <CardContent className={classes.cardContent}>
+                    <Typography variant="body2" color="textSecondary" component="p">
+                      € {p.price}
+                    </Typography>
+                    <CardActions className={classes.cardActions}>
+                      <IconButton
+                        className={classes.cardActionButton}
+                        aria-label="remove product"
+                        color="secondary"
+                        component="span"
+                        disabled={!(selectedProducts[p.id]?.count > 0)}
+                        onClick={() => handleRemoveProduct(p.id)}
+                      >
+                        <RemoveIcon />
+                      </IconButton>
+                      <div>{selectedProducts[p.id]?.count || 0}</div>
+                      <IconButton
+                        className={classes.cardActionButton}
+                        aria-label="edit product"
+                        color="primary"
+                        component="span"
+                        onClick={() => handleAddProduct(p.id)}
+                      >
+                        <AddIcon />
+                      </IconButton>
+                    </CardActions>
+                  </CardContent>
+                </Card>
+              ))}
+          </div>
+        </Box>
+        <div className={classes.orderButton}>
+          <Button color="secondary" onClick={handleBackToPlaceOrder}>
+            terug
+          </Button>
+          <Button variant="outlined" color="primary" onClick={handlePlaceOrder} disabled={placingOrder}>
+            {placingOrder && <CircularProgress size={20} />}&nbsp;Bestellen
+          </Button>
         </div>
-        <Button color="secondary" onClick={() => setShowOrderOverview(false)}>
-          terug
-        </Button>
-        <Button variant="outlined" color="primary" onClick={handlePlaceOrder} disabled={placingOrder}>
-          {placingOrder && <CircularProgress size={20} />}&nbsp;Bestellen
-        </Button>
       </>
     )
   ) : (
