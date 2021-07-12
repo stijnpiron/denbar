@@ -14,7 +14,9 @@ import CheckIcon from '@material-ui/icons/Check';
 import NewReleasesIcon from '@material-ui/icons/NewReleases';
 import firebase from 'firebase';
 import { useGetData } from 'hooks/useGetData';
+import { FirestoreQueryOperators } from 'interfaces/firestore';
 import { OrderProduct, OrderStatus } from 'interfaces/order';
+import { useState } from 'react';
 import { setAdminAuth, setAdminAuthAndReload } from 'utils/adminAuth';
 
 interface OrdersPageProps {
@@ -35,8 +37,16 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ adminAuth }) => {
 
   const db = firebase.firestore();
 
-  const [orders] = useGetData('Orders');
-  const [tables] = useGetData('Tables');
+  const [cancelOrderTableId, setCancelOrderTableId] = useState('');
+
+  const [orders] = useGetData('Orders', {
+    queryParams: {
+      field: 'status',
+      operator: FirestoreQueryOperators.EQUAL_TO,
+      value: OrderStatus.NEW,
+    },
+  });
+  const [tables] = useGetData('Tables', { docId: cancelOrderTableId });
 
   // Reload every 10 seconds to refresh to check if there are new orders
   setTimeout(() => {
@@ -54,6 +64,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ adminAuth }) => {
   };
 
   const handleCancelOrder = async (orderId: string, tableId: string, orderAmount: number) => {
+    setCancelOrderTableId(tableId);
     db.collection('Orders')
       .doc(orderId)
       .update({ status: OrderStatus.CANCELED })
@@ -68,6 +79,8 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ adminAuth }) => {
 
   return (
     <>
+      <h1>Overzicht bestellingen</h1>
+      {orders.length === 0 && 'Bestelling aan het laden of geen nieuwe bestellingen'}
       {orders
         .filter((o) => o.value.status !== OrderStatus.CANCELED)
         .sort((a, b) => b.value.date - a.value.date)

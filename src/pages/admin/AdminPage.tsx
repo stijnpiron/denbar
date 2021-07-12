@@ -27,6 +27,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import EuroIcon from '@material-ui/icons/Euro';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import firebase from 'firebase';
 import { useGetData } from 'hooks/useGetData';
@@ -112,6 +113,11 @@ const useStyles = makeStyles((theme: Theme) =>
         marginTop: 75,
       },
     },
+    tableName: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
   })
 );
 
@@ -179,6 +185,13 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
       .catch((error: any) => console.error('Error writing adding new table: ', error));
     handleAddTableDialogClose();
   };
+
+  const handleTableCopy = (table: Table) =>
+    db
+      .collection('Tables')
+      .add({ ...table, date: moment().format('DD/MM/yyyy').toString(), status: TableStatus.OPEN, amount: 0.0 })
+      .then(() => setAdminAuthAndReload())
+      .catch((error: any) => console.error('Error writing adding new table: ', error));
 
   const handleStartEditProduct = (product: FirestoreProduct) => {
     setEditProduct(product);
@@ -386,7 +399,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                                 .filter((o) => o.value.tableId === t.id)
                                 .filter(
                                   (o) => o.value.status === OrderStatus.NEW || o.value.status === OrderStatus.OPENED
-                                ).length > 0 || t.value.status !== TableStatus.PAYED
+                                ).length > 0 ||
+                              (t.value.amount !== 0 && t.value.status !== TableStatus.PAYED)
                             }
                             aria-label="remove table"
                             color="secondary"
@@ -399,7 +413,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                                 (o) => o.value.status === OrderStatus.NEW || o.value.status === OrderStatus.OPENED
                               ).length > 0 ? (
                               <div>Tafel afsluiten gaat niet: openstaande bestelling(en) voor deze tafel</div>
-                            ) : t.value.status !== TableStatus.PAYED ? (
+                            ) : t.value.amount !== 0 && t.value.status !== TableStatus.PAYED ? (
                               <div>Tafel afsluiten gaat niet: openstaand saldo voor deze tafel</div>
                             ) : (
                               <CloseIcon />
@@ -420,9 +434,19 @@ const AdminPage: React.FC<AdminPageProps> = ({ adminAuth, handleAdminAuth, pinco
                     .map((t) => (
                       <Card className={classes.disabledCard} key={t.id}>
                         <CardContent>
-                          <Typography gutterBottom variant="h5" component="h2">
-                            {t.value.name} - {t.value.date}
-                          </Typography>
+                          <div className={classes.tableName}>
+                            <Typography gutterBottom variant="h5" component="h2">
+                              {t.value.name} - {t.value.date}
+                            </Typography>
+                            <IconButton
+                              aria-label="copy table"
+                              color="primary"
+                              component="span"
+                              onClick={() => handleTableCopy(t.value)}
+                            >
+                              <FileCopyIcon />
+                            </IconButton>
+                          </div>
                           <Typography variant="body2" color="textSecondary" component="p">
                             € {t.value.amount}
                           </Typography>
