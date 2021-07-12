@@ -28,7 +28,7 @@ const drawerWidth = 200;
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     appBar: {
-      background: '#7aad55',
+      background: process.env.REACT_APP_ENVIRONMENT === 'LOCALPRD' ? 'red' : '#7aad55',
       transition: theme.transitions.create(['margin', 'width'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
