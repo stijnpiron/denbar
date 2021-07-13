@@ -48,13 +48,13 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ adminAuth }) => {
   });
   const [tables] = useGetData('Tables', { docId: cancelOrderTableId });
 
-  // Reload every 10 seconds to refresh to check if there are new orders
+  // Reload every 30 seconds to refresh to check if there are new orders
   setTimeout(() => {
     setAdminAuth();
     console.log('reload');
 
     window.location.reload();
-  }, 10000);
+  }, 30000);
 
   const handleDeliverOrder = (orderId: string) => {
     db.collection('Orders')
